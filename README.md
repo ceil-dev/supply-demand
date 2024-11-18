@@ -22,7 +22,6 @@ Our versatile library is designed to simplify the creation of complex, demand-dr
 ---
 
 ## Installation
-_Step-by-step guide to set up the project locally._
 
 ```bash
 # Clone the repository
@@ -32,8 +31,6 @@ npm install @ceil-dev/supply-demand
 ---
 
 ### Usage
-
-_How to use the project once it's set up._
 
 ```javascript
 import SupplyDemand from '@ceil-dev/supply-demand';
