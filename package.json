@@ -2,7 +2,7 @@
   "name": "@ceil-dev/supply-demand",
   "version": "0.2.5",
   "author": "Sergey Shkatula",
-  "description": "",
+  "description": "Functional programming dependency paradigm",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
