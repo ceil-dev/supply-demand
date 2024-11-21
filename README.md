@@ -43,96 +43,88 @@ import {supplyDemand} from '@ceil-dev/supply-demand';
 ```typescript
 import supplyDemand, { Supplier, cached } from '@ceil-dev/supply-demand';
 
-const supplierA: Supplier<undefined, void, { supplierB: typeof supplierB }> = (_, { future }) => {
+const supplierA: Supplier<undefined, void, { valueB: typeof supplierB }> = (
+  _,
+  { future },
+) => {
   setTimeout(() => {
-    console.log('SUPPLYING B!');
+    console.log("SUPPLYING B!");
 
-    future.supply('supplierB', 'HELLO');
+    // SupplierB will change from 'seven' to 'HELLO' after 3 seconds
+    future.supply("valueB", "WORLD!");
   }, 3000);
 };
 
 const supplierB: Supplier<undefined, Promise<string>> = async () => {
-  return 'seven';
+  return "hello";
 };
 
-const supplierD = ((_, { future }) => {
+const supplierD = (() => {
   return Math.random();
 }) satisfies Supplier;
 
-const run = () => {
-  supplyDemand(
+const run = async () => {
+  await supplyDemand(
     async (_, { demand, future }) => {
+      // First call will return a random number and cache its value
       console.log(
         demand({
-          type: 'supplierD',
-        })
+          type: "valueD",
+        }),
       );
+      // Second call returns the same value due to valueD being cached
       console.log(
         demand({
-          type: 'supplierD',
-        })
-      );
-      console.log(
-        demand({
-          type: 'supplierD',
-        })
+          type: "valueD",
+        }),
       );
 
+      // Will be set to whatever value is returned by the original valueB supplier
       const b1 = await demand({
-        type: 'supplierB',
+        type: "valueB",
       });
-      console.log('b1:', b1);
+      console.log("b1:", b1);
 
-      demand({ type: 'supplierA' });
+      // SupplierA will supply valueB with 'WORLD!' after 3 seconds
+      demand({ type: "valueA" });
 
+      // Will await the future value of valueB
       const b2 = await demand({
-        type: 'supplierB',
+        type: "valueB",
         suppliers: {
           add: {
-            supplierB: future.supplier,
+            valueB: future.supplier,
           },
         },
       });
-      console.log('b2:', b2);
+      console.log("b2:", b2);
 
+      // This will demonstrate that you can await future values and supply them in the same scope
       (async () => {
         const b3 = await demand({
-          type: 'supplierB',
+          type: "valueB",
           suppliers: {
             add: {
-              supplierB: future.supplier,
+              valueB: future.supplier,
             },
           },
         });
 
-        console.log('b3:', b3);
+        console.log("b3:", b3);
       })().catch(console.warn);
 
-      future.supply('supplierB', 'haha');
-
-      const b4 = await demand({
-        type: 'supplierC',
-        suppliers: {
-          clear: true,
-          add: {
-            supplierC: async () => {
-              return 7;
-            },
-            // supplierB: future.supplier,
-          },
-        },
-      });
-      console.log('b4:', b4);
+      // This will set valueB to 'haha' for all future demands
+      future.supply("valueB", "haha");
     },
     {
-      supplierA,
-      supplierB,
-      supplierD: cached(supplierD),
-    }
+      valueA: supplierA,
+      valueB: supplierB,
+      valueD: cached(supplierD),
+    },
   );
 };
 
-run();
+run().catch(console.error);
 ```
 
 ---
