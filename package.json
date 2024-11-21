@@ -1,6 +1,6 @@
 {
   "name": "@ceil-dev/supply-demand",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "author": "Sergey Shkatula",
   "license": "MIT",
   "description": "Functional programming dependency paradigm",
