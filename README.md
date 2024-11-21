@@ -33,7 +33,7 @@ npm install @ceil-dev/supply-demand
 ### Usage
 
 ```javascript
-import SupplyDemand from '@ceil-dev/supply-demand';
+import {supplyDemand} from '@ceil-dev/supply-demand';
 ```
 
 ---
@@ -41,7 +41,98 @@ import SupplyDemand from '@ceil-dev/supply-demand';
 ### Example
 
 ```typescript
+import supplyDemand, { Supplier, cached } from '@ceil-dev/supply-demand';
 
+const supplierA: Supplier<undefined, void, { supplierB: typeof supplierB }> = (_, { future }) => {
+  setTimeout(() => {
+    console.log('SUPPLYING B!');
+
+    future.supply('supplierB', 'HELLO');
+  }, 3000);
+};
+
+const supplierB: Supplier<undefined, Promise<string>> = async () => {
+  return 'seven';
+};
+
+const supplierD = ((_, { future }) => {
+  return Math.random();
+}) satisfies Supplier;
+
+const run = () => {
+  supplyDemand(
+    async (_, { demand, future }) => {
+      console.log(
+        demand({
+          type: 'supplierD',
+        })
+      );
+      console.log(
+        demand({
+          type: 'supplierD',
+        })
+      );
+      console.log(
+        demand({
+          type: 'supplierD',
+        })
+      );
+
+      const b1 = await demand({
+        type: 'supplierB',
+      });
+      console.log('b1:', b1);
+
+      demand({ type: 'supplierA' });
+
+      const b2 = await demand({
+        type: 'supplierB',
+        suppliers: {
+          add: {
+            supplierB: future.supplier,
+          },
+        },
+      });
+      console.log('b2:', b2);
+
+      (async () => {
+        const b3 = await demand({
+          type: 'supplierB',
+          suppliers: {
+            add: {
+              supplierB: future.supplier,
+            },
+          },
+        });
+
+        console.log('b3:', b3);
+      })().catch(console.warn);
+
+      future.supply('supplierB', 'haha');
+
+      const b4 = await demand({
+        type: 'supplierC',
+        suppliers: {
+          clear: true,
+          add: {
+            supplierC: async () => {
+              return 7;
+            },
+            // supplierB: future.supplier,
+          },
+        },
+      });
+      console.log('b4:', b4);
+    },
+    {
+      supplierA,
+      supplierB,
+      supplierD: cached(supplierD),
+    }
+  );
+};
+
+run();
 ```
 
 ---
