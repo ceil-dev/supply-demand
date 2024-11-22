@@ -50,7 +50,7 @@ const supplierA: Supplier<undefined, void, { valueB: typeof supplierB }> = (
   setTimeout(() => {
     console.log("SUPPLYING B!");
 
-    // SupplierB will change from 'seven' to 'HELLO' after 3 seconds
+    // valueB will change to 'WORLD!' after 3 seconds
     future.supply("valueB", "WORLD!");
   }, 3000);
 };
