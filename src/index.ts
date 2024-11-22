@@ -100,13 +100,16 @@ const globalDemand = <TSups extends Suppliers>(
   return supplied();
 };
 
-export const supplyDemand = <T extends Suppliers, RT = Supplier<any, any, T>>(
-  rootSupplier: RT,
-  suppliers: T
-) => {
-  const future = createFuture<T & { $$root: RT }>();
+export const supplyDemand = <
+  TSuppliers extends Suppliers,
+  TRootSupplier = Supplier<any, any, TSuppliers>,
+>(
+  rootSupplier: TRootSupplier,
+  suppliers: TSuppliers
+): TRootSupplier extends Supplier<unknown, infer R> ? R : never => {
+  const future = createFuture<TSuppliers & { $$root: TRootSupplier }>();
 
-  const res = globalDemand<T & { $$root: RT }>({
+  const res = globalDemand<TSuppliers & { $$root: TRootSupplier }>({
     key: 'root',
     type: '$$root',
     path: 'root',
@@ -118,7 +121,7 @@ export const supplyDemand = <T extends Suppliers, RT = Supplier<any, any, T>>(
     },
   });
 
-  return res as RT extends Supplier<unknown, infer R> ? R : never;
+  return res;
 };
 
 const createFuture = <TSuppliers extends Suppliers>(): Future<TSuppliers> => {
@@ -197,7 +200,7 @@ export const synchronous = <
   T extends Supplier<any, Promise<{ result?: unknown } | undefined | void>>,
 >(
   supplier: T
-) => {
+): T => {
   let holdPromise: Promise<unknown> | undefined;
 
   return ((data, scope) => {
@@ -233,7 +236,7 @@ export const synchronous = <
 };
 
 // Return cached value once recevied resolved the supplier
-export const cached = <T extends Supplier>(supplier: T) => {
+export const cached = <T extends Supplier>(supplier: T): T => {
   const result: { value?: SupplierReturn<T> } = {};
 
   return ((data, scope) => {
