@@ -1,0 +1,6 @@
+{
+  "name": "@ceil-dev/supply-demand",
+  "version": "0.2.6",
+  "license": "MIT",
+  "exports": "./mod.ts"
+}

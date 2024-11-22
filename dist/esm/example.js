@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,8 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const _1 = require(".");
+import supplyDemand, { cached } from '.';
 const supplierA = (_, { future }) => {
     setTimeout(() => {
         console.log('SUPPLYING B!');
@@ -23,7 +21,7 @@ const supplierD = (() => {
     return Math.random();
 });
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, _1.default)((_2, _a) => __awaiter(void 0, [_2, _a], void 0, function* (_, { demand, future }) {
+    yield supplyDemand((_1, _a) => __awaiter(void 0, [_1, _a], void 0, function* (_, { demand, future }) {
         console.log(demand({
             type: 'valueD',
         }));
@@ -59,7 +57,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     }), {
         valueA: supplierA,
         valueB: supplierB,
-        valueD: (0, _1.cached)(supplierD),
+        valueD: cached(supplierD),
     });
 });
 run().catch(console.error);
