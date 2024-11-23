@@ -1,6 +1,6 @@
 {
   "name": "@ceil-dev/supply-demand",
-  "version": "0.2.9",
+  "version": "0.2.11",
   "author": "Sergey Shkatula",
   "license": "MIT",
   "description": "Functional programming dependency paradigm",
@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npx tsc --watch",
     "build": "npx tsc && npx tsc --project tsconfig.cjs.json",
-    "example": "node dist/esm/example.js",
+    "example": "node dist/cjs/example.js",
     "lint": "npx eslint . --ext .ts"
   },
   "repository": {
